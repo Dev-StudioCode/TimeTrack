@@ -1,0 +1,16 @@
+# Build artifacts
+*.o
+*.obj
+*.tmp
+*.bin
+*.dll
+*.exe
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Windhawk temporary files
+*.wh.tmp
