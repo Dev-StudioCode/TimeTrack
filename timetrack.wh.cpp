@@ -4,10 +4,10 @@
 // @description     Digital wellbeing & daily screen time monitor for Windows
 // @version         1.0.0
 // @author          Dev-StudioCode
-// @github          https://github.com/Dev-StudioCode/TimeTrack
+// @github          https://github.com/Dev-StudioCode
 // @include         explorer.exe
 // @architecture    x86-64
-// @compilerOptions -lpsapi -lshlwapi -lshell32
+// @compilerOptions -lpsapi -lshlwapi -lshell32 -lole32
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
@@ -433,6 +433,30 @@ static std::wstring GetActiveProcessExecutableName() {
     }
 
     CloseHandle(hProcess);
+
+    // If hosted inside UWP ApplicationFrameHost, resolve real child process (e.g., Calculator, Settings)
+    if (_wcsicmp(exeName.c_str(), L"ApplicationFrameHost.exe") == 0) {
+        HWND hChild = FindWindowExW(hwnd, NULL, L"Windows.UI.Core.CoreWindow", NULL);
+        if (hChild) {
+            DWORD childPid = 0;
+            GetWindowThreadProcessId(hChild, &childPid);
+            if (childPid != 0 && childPid != pid) {
+                HANDLE hChildProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, childPid);
+                if (hChildProc) {
+                    WCHAR childPath[MAX_PATH];
+                    DWORD childSize = ARRAYSIZE(childPath);
+                    if (QueryFullProcessImageNameW(hChildProc, 0, childPath, &childSize)) {
+                        PCWSTR childFileName = PathFindFileNameW(childPath);
+                        if (childFileName && *childFileName) {
+                            exeName = childFileName;
+                        }
+                    }
+                    CloseHandle(hChildProc);
+                }
+            }
+        }
+    }
+
     return exeName;
 }
 
@@ -440,6 +464,14 @@ static std::wstring GetActiveProcessExecutableName() {
 // User Inactivity Detection
 // ---------------------------------------------------------------------------
 static bool CheckIsUserIdle(int thresholdSeconds) {
+    // 1. Check if desktop is locked or on secure desktop (Win + L)
+    HDESK hDesk = OpenInputDesktop(0, FALSE, DESKTOP_SWITCHDESKTOP);
+    if (!hDesk) {
+        return true; // Workstation locked or secure desktop active
+    }
+    CloseDesktop(hDesk);
+
+    // 2. Check mouse/keyboard inactivity
     LASTINPUTINFO lii = { sizeof(LASTINPUTINFO) };
     if (!GetLastInputInfo(&lii)) {
         return false;
@@ -605,6 +637,7 @@ static void ShowTrayContextMenu(HWND hWnd) {
 
     SetForegroundWindow(hWnd);
     TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, 0, hWnd, NULL);
+    PostMessageW(hWnd, WM_NULL, 0, 0);
     DestroyMenu(hMenu);
 }
 
@@ -691,8 +724,9 @@ static DWORD WINAPI TimeTrackWorkerThread(LPVOID) {
 
     g_hTrayWnd = CreateWindowExW(
         0, wc.lpszClassName, L"TimeTrackTrayWnd",
-        0, 0, 0, 0, 0,
-        HWND_MESSAGE, NULL, wc.hInstance, NULL
+        WS_POPUP,
+        0, 0, 0, 0,
+        NULL, NULL, wc.hInstance, NULL
     );
 
     if (!g_hTrayWnd) {
@@ -801,7 +835,8 @@ void Wh_ModUninit() {
     Wh_Log(L"TimeTrack uninitialized.");
 }
 
-void Wh_ModSettingsChanged() {
+BOOL Wh_ModSettingsChanged(BOOL* bReload) {
     Wh_Log(L"TimeTrack settings changed.");
-    LoadModSettings();
+    *bReload = TRUE;
+    return TRUE;
 }

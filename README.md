@@ -20,7 +20,7 @@ A lightweight, privacy-respecting digital wellbeing and screen time monitor for 
 1. Make sure [Windhawk](https://windhawk.net/) is installed on your Windows PC.
 2. In Windhawk, navigate to the **Mods** tab.
 3. Click the three dots menu (**⋮**) in the top right corner and choose **New mod**.
-4. Copy and paste the entire contents of [`TimeTrack.wh.cpp`](./TimeTrack.wh.cpp) into the editor.
+4. Copy and paste the entire contents of [`timetrack.wh.cpp`](./timetrack.wh.cpp) into the editor.
 5. Click **Compile and run**.
 6. The TimeTrack icon will appear in your system tray, actively tracking your screen time!
 
