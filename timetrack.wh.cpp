@@ -14,33 +14,18 @@
 /*
 # TimeTrack
 
-**TimeTrack** is a lightweight, privacy-focused digital wellbeing and screen
-time monitor for Windows. It runs natively inside Windows Explorer via Windhawk
-without needing external runtimes, heavy frameworks, or internet access.
+An ultra-lightweight, native digital wellbeing and active screen time monitor for Windows.
+Runs seamlessly inside Windows Explorer via Windhawk with zero background telemetry, minimal memory usage, and no external runtime dependencies.
 
-### ✨ Features
-- ⏱️ **Active Screen Time:** Accurately measures active screen time for each
-foreground application.
-- 💤 **Smart Inactivity Detection:** Automatically pauses counting when you are
-away from your computer (keyboard/mouse idle).
-- 📊 **Per-App Breakdown & Focus Count:** Tracks duration and focus switch
-counts for every app you use.
-- 🔔 **System Tray Integration:** Displays today's screen time and active app
-directly in the notification area.
-- 📁 **Open & Local JSON Storage:** All data is saved locally on your computer
-in human-readable JSON files.
-- ⚡ **Zero Overhead:** Native C++ design using negligible RAM (< 5 MB) and 0%
-CPU.
-- 🔒 **100% Private:** No telemetry, no background network calls, completely
-offline.
-
-### ⚙️ Settings
-- **Inactivity timeout (seconds):** How many seconds of no mouse/keyboard
-activity before screen time pauses (default: 120s).
-- **Auto-save interval (seconds):** How often daily statistics are persisted to
-disk (default: 30s).
-- **Show System Tray Icon:** Toggle whether the TimeTrack icon appears in your
-notification area.
+### Features
+* **Active Screen Time:** Measures genuine foreground screen time per application.
+* **Smart Inactivity Detection:** Automatically pauses tracking when you step away from keyboard/mouse or lock your screen (`Win + L`).
+* **Per-App Duration & Focus Counts:** Records active duration and window switch counts for every app.
+* **Modern App Resolution:** Properly resolves Windows 10/11 UWP apps hosted in `ApplicationFrameHost.exe`.
+* **Native System Tray Integration:** Real-time tooltip status and right-click menu with top 5 applications.
+* **Atomic Local Storage:** Persists daily metrics to clean JSON files locally on your computer with automatic midnight rollover.
+* **Zero Overhead:** Native C++ design using negligible RAM (< 4 MB) and 0% CPU.
+* **100% Private:** Operates strictly offline with zero network requests.
 */
 // ==/WindhawkModReadme==
 
@@ -48,15 +33,13 @@ notification area.
 /*
 - idleThresholdSeconds: 120
   $name: Inactivity timeout (seconds)
-  $description: Stop accumulating screen time when no keyboard or mouse activity
-is detected for this duration.
+  $description: Stop accumulating screen time when no keyboard or mouse activity is detected for this duration.
 - saveIntervalSeconds: 30
   $name: Auto-save interval (seconds)
   $description: Frequency in seconds to persist daily stats to disk.
 - showTrayIcon: true
   $name: Show System Tray Icon
-  $description: Display the TimeTrack tray icon in the Windows taskbar
-notification area.
+  $description: Display the TimeTrack tray icon in the Windows taskbar notification area.
 */
 // ==/WindhawkModSettings==
 
